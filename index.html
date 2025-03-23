@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <title>Convert HTML to DOCX</title>
+    <meta charset='utf-8'>
+    <meta name="DC.description" content="Convert HTML to DOCX">
+    <meta name="author" content="Amal Amrani, amal.amrani@gmail.com">
+
+    <link rel="shortcut icon" href="#">
+
+    <!-- <script type="text/javascript" src="jszip-master/dist/jszip.min.js"></script>
+    <script type="text/javascript" src="jszip-master/vendor/FileSaver.js"></script> -->
+
+    <script src="ckeditor/standard/ckeditor.js"></script>
+    <!-- <script src="ckeditor/config.js"></script> -->
+
+
+    <script src="docxtemplater/docxtemplater-latest.min.js"></script>
+    <script src="docxtemplater/pizzip.js"></script>
+    <script src="docxtemplater/pizzip-utils.js"></script>
+    <script src="docxtemplater/FileSaver.js"></script>
+
+    <script src="html2docxml/html2docxml.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Convert/Parse html to docx</h1>
+    <div>
+        <span>Title:</span> <input type="text" name="" id="title1" value="כותרת מסמך 1" />
+    </div>
+    <div style="margin-top: 10px;">
+        <span>Content:</span><br>
+        <textarea name="editor1" id="editor1" rows="10" cols="80" dir="ltr">
+            <ol>
+                <li><span dir="rtl" lang="he"><strong>שפה</strong>&nbsp;היא דרך&nbsp;<a
+                            href="http://he.wikipedia.org/wiki/%D7%AA%D7%A7%D7%A9%D7%95%D7%A8%D7%AA">תקשורת</a>&nbsp;המבוססת
+                        על&nbsp;<a href="http://he.wikipedia.org/wiki/%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA">מערכת</a>&nbsp;<a
+                            href="http://he.wikipedia.org/wiki/%D7%A1%D7%9E%D7%9C">סמלים</a>&nbsp;מורכבת בעלת חוקיות, המאפשרת
+                        לקודד&nbsp;<a
+                            href="http://he.wikipedia.org/wiki/%D7%90%D7%A8%D7%92%D7%95%D7%9F_(%D7%A4%D7%A2%D7%95%D7%9C%D7%94)">ולארגן</a>&nbsp;<a
+                            href="http://he.wikipedia.org/wiki/%D7%9E%D7%99%D7%93%D7%A2">מידע</a>&nbsp;בעל&nbsp;<a
+                            href="http://he.wikipedia.org/wiki/%D7%9E%D7%A9%D7%9E%D7%A2%D7%95%D7%AA">משמעויות</a>&nbsp;רבות
+                        ומגוונות.&nbsp;</span></li>
+                <li><span dir="rtl" lang="he">נהוג להבדיל בין הסמל השפתי ה<a
+                            href="http://he.wikipedia.org/wiki/%D7%9E%D7%A1%D7%9E%D7%9F">מסמן</a>&nbsp;לבין המושג או התוכן ה<a
+                            href="http://he.wikipedia.org/wiki/%D7%9E%D7%A1%D7%95%D7%9E%D7%9F">מסומן</a>&nbsp;בו, אשר יכול
+                        להיות&nbsp;<a
+                            href="http://he.wikipedia.org/wiki/%D7%9E%D7%A6%D7%99%D7%90%D7%95%D7%AA">מציאותי</a>&nbsp;או&nbsp;<a
+                            href="http://he.wikipedia.org/wiki/%D7%94%D7%A4%D7%A9%D7%98%D7%94">מופשט</a>.</span></li>
+                <li>הבלשנות עוסקת בחקר השפה והשימוש בה.&nbsp;</li>
+                <li>סמנטיקה&lrm; היא ענף הלשון המתמקד בחקר המשמעות של השפה&rlm;.&nbsp;</li>
+                <li>מכלול אוצר המילים של שפה מסוימת מכונה לקסיקון.&nbsp;</li>
+                <li>כלי לאיסוף וביאור של פרטים בלקסיקון מכונה מילון.</li>
+            </ol>
+            
+            <p><img alt="" src="images/IMG_9248p.jpg" style="height:80px; width:120px" /></p>
+            
+            <p><img alt="" src="images/photo-2.jpg" style="height:100px; width:67px" /></p>
+
+        </textarea>
+    </div>
+    <button onclick="generate()">Generate document</button>
+    <script>
+        //http://officeopenxml.com/anatomyofOOXML.php
+
+        //https://docxtemplater.com/docs/goals/
+        //https://github.com/open-xml-templating/pizzip/tree/master/documentation/api_pizzip
+
+        //https://ckeditor.com/docs/ckeditor4/latest/index.html
+
+
+
+        // Replace the <textarea id="editor1"> with a CKEditor 4
+        // instance, using default configuration.
+
+
+
+
+
+        var editor1 = CKEDITOR.replace('editor1', {
+            // contentsLangDirection: 'rtl',
+
+        });
+
+
+
+
+
+        function loadFile(url, callback) {
+            PizZipUtils.getBinaryContent(url, callback);
+        }
+
+        function generate() {
+            // let file_path = location.hostname + "/input.docx";
+            let file_path = "simple_raw_input.docx";
+            // console.log("file_path:", file_path, ",hostname:", location.hostname)
+
+            loadFile(
+                // the "template" example hosted by us
+                file_path,
+                function (error, content) {
+                    if (error) {
+                        throw error;
+                    }
+                    const zip = new PizZip(content);
+                    const doc = new Docxtemplater(zip, {
+                        paragraphLoop: true,
+                        linebreaks: true,
+                    });
+
+
+                    // let doc_fields = {
+                    //     form_name: title,
+                    //     content: data,
+                    // }
+
+                    let title = document.getElementById("title1").value;
+                    let textarea1 = editor1.getData();
+
+                    // var Html2Docxml = new Html2Docxml(doc, {
+                    //     process_img: true,
+                    //     doc_render : true,
+                    //     fields: doc_fields
+                    // });
+
+                    var html2docxml = new Html2Docxml(doc);
+                    var docx_elements = html2docxml.parse(textarea1, function (data, is_img) {
+
+                        doc.render({
+                            form_name: title,
+                            content: data,
+                        });
+
+                        // console.log("doc:", doc.getZip().files["word/_rels/document.xml.rels"].asText())
+
+                        if (is_img) {
+
+
+                            // let contentTypes = '<Default ContentType="image/png" Extension="png"/>';
+
+                            // let cTypes = doc.getZip().files["[Content_Types].xml"].asText();
+
+                            // if (!cTypes.includes('Extension="png"')) {
+                            //     cTypes = cTypes.replace("</Types>", contentTypes + "</Types>");
+                            //     doc.getZip().file("[Content_Types].xml", cTypes);
+                            // }
+
+                            html2docxml.addImgTypeToContentTypes();
+
+                        }
+
+                        const blob = doc.getZip().generate({
+                            type: "blob",
+                            mimeType:
+                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            /*
+                             * compression: DEFLATE adds a compression step.
+                             * For a 50MB output document, expect 500ms additional CPU time
+                             */
+                            compression: "DEFLATE",
+                        });
+                        // Output the document using Data-URI
+                        saveAs(blob, "output.docx");
+
+
+                    });
+
+                    // console.log("docx_elements:", docx_elements)
+
+
+                }
+            );
+        }
+
+
+
+
+
+
+
+
+    </script>
+
+
+</body>
+
+</html>
